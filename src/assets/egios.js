@@ -119,7 +119,8 @@ export default class App extends Component {
     // );
     if (
       this.state.current > e.nativeEvent.contentOffset.y &&
-      this.state.current - e.nativeEvent.contentOffset.y > 10
+      e.nativeEvent.contentOffset.y < 673 &&
+      e.nativeEvent.contentOffset.y > 0
     ) {
       if (!this.state.expanded) {
         this.expand();
@@ -130,7 +131,7 @@ export default class App extends Component {
       }
     } else if (
       this.state.current < e.nativeEvent.contentOffset.y &&
-      e.nativeEvent.contentOffset.y - this.state.current > 10 &&
+      e.nativeEvent.contentOffset.y < 673 &&
       e.nativeEvent.contentOffset.y > 120
     ) {
       if (this.state.expanded) {
@@ -174,6 +175,11 @@ export default class App extends Component {
       outputRange: [0, 0, 1],
       extrapolate: "clamp"
     });
+    const boxMov = this.state.scrollY.interpolate({
+      inputRange: [0, 120],
+      outputRange: [0, -23],
+      extrapolate: "clamp"
+    });
     const boxTranslate = this.state.boxY.interpolate({
       inputRange: [0, 100],
       outputRange: [-100, 0],
@@ -201,7 +207,7 @@ export default class App extends Component {
         >
           <View
             style={{
-              marginTop: 220,
+              marginTop: 180,
               justifyContent: "center",
               alignItems: "center"
             }}
@@ -215,15 +221,15 @@ export default class App extends Component {
         <Animated.View
           style={{
             position: "absolute",
-            height: 100,
+            height: 80,
             width: width,
             top: 0,
             shadowOffset: {
               width: -1,
-              height: 3
+              height: -4
             },
             shadowOpacity: 0.3,
-            zIndex: 15,
+            zIndex: 16,
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "row",
@@ -235,12 +241,11 @@ export default class App extends Component {
               flex: 1,
               flexDirection: "row",
               padding: 10,
-              marginHorizontal: 10,
-              top: 7
+              marginHorizontal: 10
             }}
           >
             <Item>
-              <Icon active style={{ color: "rgba(0,0,0,0.2)" }} name="search" />
+              <Icon active style={{ color: "rgba(0,0,0,0.4)" }} name="search" />
               <Input placeholder="Mountains" />
             </Item>
           </View>
@@ -249,12 +254,11 @@ export default class App extends Component {
               flex: 1,
               flexDirection: "row",
               padding: 10,
-              marginHorizontal: 10,
-              top: 7
+              marginHorizontal: 10
             }}
           >
             <Item>
-              <Icon active style={{ color: "rgba(0,0,0,0.2)" }} name="swap" />
+              <Icon active style={{ color: "rgba(0,0,0,0.4)" }} name="swap" />
               <Input placeholder="Narnia" />
             </Item>
           </View>
@@ -262,77 +266,51 @@ export default class App extends Component {
         <Animated.View
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            overflow: "hidden",
-            height: 240,
-            shadowOffset: {
-              width: -1,
-              height: 3
-            },
-            shadowOpacity: 0.3,
-            zIndex: 10,
-            transform: [{ translateY: headerTranslate }]
-          }}
-        />
-        <Animated.View
-          style={{
-            position: "absolute",
             top: 100,
             left: 0,
             right: 0,
-            height: 80,
+            height: 60,
             shadowOffset: {
               width: -1,
-              height: -3
+              height: 2
             },
             shadowOpacity: 0.4,
-            zIndex: boxEle,
-            overflow: "hidden",
             opacity: boxOp,
+            zIndex: boxEle,
             backgroundColor: "rgb(255, 253, 250)",
             transform: [
               { scaleY: boxY },
               { translateY: boxTranslate },
+              { translateY: boxMov },
               { scaleX: boxX }
             ]
           }}
         >
-          <Animated.View
+          <View
             style={{
-              height: 80,
-              top: 0,
+              height: 60,
+              top: 5,
               flexDirection: "row",
-              justifyContent: "center",
+              justifyContent: "space-around",
               alignItems: "center"
             }}
           >
-            <Button
-              transparent
-              style={{ marginHorizontal: 10, marginVertical: 20 }}
-            >
+            <Button transparent>
               <Icon name="home" />
             </Button>
-            <Button
-              transparent
-              style={{ marginHorizontal: 10, marginVertical: 20 }}
-            >
+            <Button transparent>
+              <Icon name="person" />
+            </Button>
+            <Button transparent>
               <Icon name="car" />
             </Button>
-            <Button
-              transparent
-              style={{ marginHorizontal: 10, marginVertical: 20 }}
-            >
+            <Button transparent>
               <Icon name="ios-menu" />
             </Button>
-            <Button
-              transparent
-              style={{ marginHorizontal: 10, marginVertical: 20 }}
-            >
+            <Button transparent>
               <Icon name="bug" />
             </Button>
-          </Animated.View>
+          </View>
         </Animated.View>
       </View>
     );
