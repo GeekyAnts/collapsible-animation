@@ -4,7 +4,10 @@
     "version": "1.0.0",
     "sdkVersion": "18.0.0",
     "android": {
-      "package": "com.geekyants.springHeader"
+      "package": "com.geekyants.springHeader",
+    },
+    "ios": {
+      "bundleIdentifier": "com.geekyants.springHeader",
     }
    }
  }

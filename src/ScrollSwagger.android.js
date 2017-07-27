@@ -16,20 +16,14 @@ const { height, width } = Dimensions.get("window");
 export default class ScrollSwagger extends Component {
   constructor(props) {
     super(props);
-    console.log("Height   ", height);
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
     this.state = {
       scrollY: new Animated.Value(0),
       boxY: new Animated.Value(100),
-      dataSource: ds.cloneWithRows([
-        { key: 1, name: "ash", url: "./assets/ash.jpg" },
-        { key: 2, name: "lagoon", url: "./assets/lagoon.jpg" },
-        { key: 3, name: "mount", url: "./assets/mount.jpg" },
-        { key: 4, name: "legs", url: "./assets/ash.jpg" }
-      ]),
-      itemCount: 4,
+      dataSource: ds.cloneWithRows(this.props.itemArray),
+      itemCount: this.props.itemArray.length,
       expanded: true,
       current: 0,
       isReady: false,
@@ -44,16 +38,27 @@ export default class ScrollSwagger extends Component {
     this.setState({ isReady: true });
   }
   componentDidMount() {
-    this.setState({
-      scrollHeight: this.state.itemCount * 290 - height + 180
-    });
+    // console.log(this.props.itemArray);
+    // console.log(this.props.boxComponent);
+    // console.log(this.props.headComponent);
+    if (this.props.boxComponent !== undefined) {
+      this.setState({
+        scrollHeight: this.state.itemCount * 290 - height + 180,
+        boxHai: true
+      });
+    } else if (this.props.boxComponent === undefined) {
+      this.setState({
+        scrollHeight: this.state.itemCount * 290 - height + 80,
+        boxHai: false
+      });
+    }
   }
   renderRow(rowData) {
     // console.log(rowData);
     return (
       <Animated.View
         style={{
-          width: 340,
+          width: width - 20,
           margin: 15,
           borderRadius: 3,
           height: 260,
@@ -63,10 +68,10 @@ export default class ScrollSwagger extends Component {
         key={rowData.key}
       >
         <Image
-          source={require("./assets/lagoon.jpg")}
+          source={{ uri: rowData.url }}
           style={{
             height: 190,
-            width: 340,
+            width: width - 20,
             borderRadius: 3,
             flexDirection: "column"
           }}
@@ -75,7 +80,7 @@ export default class ScrollSwagger extends Component {
         <View
           style={{
             height: 70,
-            width: 340,
+            width: width - 20,
             borderRadius: 3,
             backgroundColor: "white",
             justifyContent: "flex-start",
@@ -112,7 +117,6 @@ export default class ScrollSwagger extends Component {
     }).start();
   }
   _handleScroll(e) {
-    console.log(e.nativeEvent.contentOffset.y);
     if (
       this.state.current > e.nativeEvent.contentOffset.y &&
       e.nativeEvent.contentOffset.y < this.state.scrollHeight &&
@@ -146,7 +150,12 @@ export default class ScrollSwagger extends Component {
       <Animated.ScrollView
         {...props}
         scrollEventThrottle={16}
-        contentContainerStyle={{ paddingTop: 180 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: this.state.boxHai ? 180 : 80,
+          alignItems: "center",
+          justifyContent: "center"
+        }}
         onScroll={Animated.event(
           [
             {
@@ -169,12 +178,12 @@ export default class ScrollSwagger extends Component {
       extrapolate: "clamp"
     });
     const boxTranslate = this.state.scrollY.interpolate({
-      inputRange: [0, 180],
-      outputRange: [0, -20],
+      inputRange: [0, 100],
+      outputRange: [0, -21],
       extrapolate: "clamp"
     });
     const boxEle = this.state.scrollY.interpolate({
-      inputRange: [0, 180],
+      inputRange: [0, 100],
       outputRange: [5, 15],
       extrapolate: "clamp"
     });
@@ -187,8 +196,8 @@ export default class ScrollSwagger extends Component {
       outputRange: [-300, 0]
     });
     const boxOp = this.state.boxY.interpolate({
-      inputRange: [0, 100],
-      outputRange: [0, 1]
+      inputRange: [0, 50, 100],
+      outputRange: [0, 0, 1]
     });
     return (
       <View style={{ flex: 1 }}>
@@ -204,10 +213,7 @@ export default class ScrollSwagger extends Component {
             width: width,
             top: 0,
             elevation: 15,
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "row",
-            backgroundColor: "rgb(255, 253, 250)"
+            backgroundColor: "white"
           }}
         >
           {this.props.headComponent}
@@ -218,9 +224,10 @@ export default class ScrollSwagger extends Component {
             top: 100,
             left: 0,
             right: 0,
-            height: 60,
+            height: this.state.boxHai ? 60 : 0,
             elevation: boxEle,
-            backgroundColor: "rgb(255, 253, 250)",
+            backgroundColor: "white",
+            opacity: boxOp,
             transform: [
               { scaleX: boxX },
               { translateY: boxTranslate },
